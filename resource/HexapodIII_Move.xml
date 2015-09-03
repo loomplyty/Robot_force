@@ -1543,6 +1543,20 @@
                     <beta abbreviation="b" type="double" default="0"/>
                 </wk_param>
             </wk>
+            <move>
+                <move_param type="group">
+                    <target type="unique">
+                	<body abbreviation="b"/>
+                	<lf/>
+                    </target>
+                    <x abbreviation="x" type="double" default="0"/>
+                    <y abbreviation="y" type="double" default="0"/>
+                    <z abbreviation="z" type="double" default="0"/>
+                    <dx abbreviation="dx" type="double" default="0"/>
+                    <dy abbreviation="dy" type="double" default="0"/>
+                    <dz abbreviation="dz" type="double" default="0"/>
+                </move_param>
+            </move>
         </Commands>
         <Connection IP="127.0.0.1" Port="5866"/>
         <Control>

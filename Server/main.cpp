@@ -17,7 +17,7 @@ using namespace std;
 
 using namespace Aris::Core;
 
-#include "trajectory_generator.h"
+//#include "trajectory_generator.h"
 
 
 Aris::Core::MSG parseWalk(const std::string &cmd, const map<std::string, std::string> &params)
@@ -91,7 +91,7 @@ Aris::Core::MSG parseAdjust(const std::string &cmd, const map<std::string, std::
 		0.3,-0.85,0.65,
 	};
 
-	Robots::ADJUST_PARAM  param;
+    Robots::ADJUST_PARAM  param;
 
 	std::copy_n(firstEE, 18, param.targetPee[0]);
 	std::fill_n(param.targetBodyPE[0], 6, 0);
@@ -151,6 +151,110 @@ Aris::Core::MSG parseAdjust(const std::string &cmd, const map<std::string, std::
 	return msg;
 }
 
+Aris::Core::MSG parseMove(const std::string &cmd, const map<std::string, std::string> &params)
+{
+    double firstEE[18] =
+    {
+        -0.3,-0.75,-0.65,
+        -0.45,-0.75,0,
+        -0.3,-0.75,0.65,
+        0.3,-0.75,-0.65,
+        0.45,-0.75,0,
+        0.3,-0.75,0.65,
+    };
+
+    double beginEE[18]
+    {
+        -0.3,-0.85,-0.65,
+        -0.45,-0.85,0,
+        -0.3,-0.85,0.65,
+        0.3,-0.85,-0.65,
+        0.45,-0.85,0,
+        0.3,-0.85,0.65,
+    };
+
+    int legNo=0;//腿序号
+    double legPee[3];
+
+    for(auto &i:params)
+    {
+        if(i.first=="component")
+        {
+            if(i.second=="lf")
+            {
+                legNo=0;
+            }
+            else if(i.second=="lm")
+            {
+                legNo=1;
+            }
+            else if(i.second=="lr")
+            {
+                legNo=2;
+            }
+            else if(i.second=="rf")
+            {
+                legNo=3;
+            }
+            else if(i.second=="rm")
+            {
+                legNo=4;
+            }
+            else if(i.second=="rr")
+            {
+                legNo=5;
+            }
+        }
+        else if(i.first=="x")
+        {
+            legPee[0]=stod(i.second);
+        }
+        else if(i.first=="y")
+        {
+            legPee[1]=stod(i.second);
+        }
+        else if(i.first=="z")
+        {
+            legPee[2]=stod(i.second);
+        }
+        else
+        {
+            std::cout<<"parse failed"<<std::endl;
+            return MSG{};
+        }
+    }
+
+    std::copy_n(legPee, 3, &beginEE[3*legNo]);
+
+    Robots::ADJUST_PARAM  param;
+
+    std::copy_n(firstEE, 18, param.targetPee[0]);
+    std::fill_n(param.targetBodyPE[0], 6, 0);
+    std::copy_n(beginEE, 18, param.targetPee[1]);
+    std::fill_n(param.targetBodyPE[1], 6, 0);
+
+    param.periodNum = 2;
+    param.periodCount[0]=1000;
+    param.periodCount[1]=1500;
+
+    std::strcpy(param.relativeCoordinate,"B");
+    std::strcpy(param.relativeBodyCoordinate,"B");
+
+    param.legNum=1;
+    param.motorNum=3;
+    param.legID[0]=legNo;
+
+    int motors[3] = { 3*legNo,3*legNo+1,3*legNo+2 };
+    std::copy_n(motors, 9, param.motorID);
+
+    Aris::Core::MSG msg;
+
+    msg.CopyStruct(param);
+
+    std::cout<<"finished parse"<<std::endl;
+
+    return msg;
+}
 
 int main()
 {
@@ -159,6 +263,7 @@ int main()
 	rs->LoadXml("/usr/Robots/resource/HexapodIII/HexapodIII.xml");
 	rs->AddGait("wk",Robots::walk,parseWalk);
 	rs->AddGait("ad",Robots::adjust,parseAdjust);
+    rs->AddGait("move",Robots::adjust,parseMove);
 	rs->Start();
 	/**/
 	std::cout<<"finished"<<std::endl;
