@@ -1545,10 +1545,7 @@
             </wk>
             <move>
                 <move_param type="group">
-                    <target type="unique">
-                	<body abbreviation="b"/>
-                	<lf/>
-                    </target>
+                    <component abbreviation="c" type="string" default="bd"/>
                     <x abbreviation="x" type="double" default="0"/>
                     <y abbreviation="y" type="double" default="0"/>
                     <z abbreviation="z" type="double" default="0"/>

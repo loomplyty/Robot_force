@@ -260,7 +260,7 @@ int main()
 {
 	auto rs = Robots::ROBOT_SERVER::GetInstance();
 	rs->CreateRobot<Robots::ROBOT_III>();
-	rs->LoadXml("/usr/Robots/resource/HexapodIII/HexapodIII.xml");
+    rs->LoadXml("/usr/Robots/CMakeDemo/Robot_III/resource/HexapodIII_Move.xml");
 	rs->AddGait("wk",Robots::walk,parseWalk);
 	rs->AddGait("ad",Robots::adjust,parseAdjust);
     rs->AddGait("move",Robots::adjust,parseMove);
