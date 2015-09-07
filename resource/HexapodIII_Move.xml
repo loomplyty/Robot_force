@@ -1546,12 +1546,18 @@
             <move>
                 <move_param type="group">
                     <component abbreviation="c" type="string" default="bd"/>
-                    <x abbreviation="x" type="double" default="0"/>
-                    <y abbreviation="y" type="double" default="0"/>
-                    <z abbreviation="z" type="double" default="0"/>
-                    <dx type="double" default="0"/>
-                    <dy type="double" default="0"/>
-                    <dz type="double" default="0"/>
+                    <move_pos type="unique" default="relative">
+                        <relative/>
+                            <u abbreviation="u" type="double" default="0"/>
+                            <v abbreviation="v" type="double" default="0"/>
+                            <w abbreviation="w" type="double" default="0"/>
+                        </relative>
+                        <absolute>
+                            <x abbreviation="x" type="double"/>
+                            <y abbreviation="y" type="double"/>
+                            <z abbreviation="z" type="double"/>
+                        </absolute>
+                    </move_pos>
                 </move_param>
             </move>
         </Commands>

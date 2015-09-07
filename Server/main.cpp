@@ -14,6 +14,8 @@ using namespace std;
 #include <Aris_Message.h>
 #include <Aris_Control.h>
 #include <Robot_Server.h>
+#include <Robot_Gait.h>
+#include <Robot_Base.h>
 
 using namespace Aris::Core;
 
@@ -151,30 +153,21 @@ Aris::Core::MSG parseAdjust(const std::string &cmd, const map<std::string, std::
 	return msg;
 }
 
+struct MOVES_PARAM :public Robots::GAIT_PARAM_BASE
+{
+    double targetPee[18]{0};
+    double targetBodyPE[6]{0};
+    std::int32_t periodCount;
+    int comID; //移动的部件（component）序号
+    bool isAbsolute{false}; //用于判断移动命令是绝对坐标还是相对坐标
+};
+
+
 Aris::Core::MSG parseMove(const std::string &cmd, const map<std::string, std::string> &params)
 {
-    double firstEE[18] =
-    {
-        -0.3,-0.75,-0.65,
-        -0.45,-0.75,0,
-        -0.3,-0.75,0.65,
-        0.3,-0.75,-0.65,
-        0.45,-0.75,0,
-        0.3,-0.75,0.65,
-    };
+    MOVES_PARAM  param;
 
-    double beginEE[18]
-    {
-        -0.3,-0.85,-0.65,
-        -0.45,-0.85,0,
-        -0.3,-0.85,0.65,
-        0.3,-0.85,-0.65,
-        0.45,-0.85,0,
-        0.3,-0.85,0.65,
-    };
-
-    int legNo=0;//腿序号
-    double legPee[3];
+    double targetPos[3]; //移动目标位置
 
     for(auto &i:params)
     {
@@ -182,40 +175,66 @@ Aris::Core::MSG parseMove(const std::string &cmd, const map<std::string, std::st
         {
             if(i.second=="lf")
             {
-                legNo=0;
+                param.comID=0;
             }
             else if(i.second=="lm")
             {
-                legNo=1;
+                param.comID=1;
             }
             else if(i.second=="lr")
             {
-                legNo=2;
+                param.comID=2;
             }
             else if(i.second=="rf")
             {
-                legNo=3;
+                param.comID=3;
             }
             else if(i.second=="rm")
             {
-                legNo=4;
+                param.comID=4;
             }
             else if(i.second=="rr")
             {
-                legNo=5;
+                param.comID=5;
+            }
+            else if(i.second=="bd")
+            {
+                param.comID=6;
+            }
+            else
+            {
+                std::cout<<"parse failed"<<std::endl;
+                return MSG{};
             }
         }
+        //绝对坐标移动
         else if(i.first=="x")
         {
-            legPee[0]=stod(i.second);
+            targetPos[0]=stod(i.second);
+            param.isAbsolute=true;
         }
         else if(i.first=="y")
         {
-            legPee[1]=stod(i.second);
+            targetPos[1]=stod(i.second);
+            param.isAbsolute=true;
         }
         else if(i.first=="z")
         {
-            legPee[2]=stod(i.second);
+            targetPos[2]=stod(i.second);
+            param.isAbsolute=true;
+        }
+        //相对坐标移动
+        else if(i.first=="u")
+        {
+            targetPos[0]=stod(i.second);
+        }
+        else if(i.first=="v")
+        {
+            targetPos[1]=stod(i.second);
+        }
+        else if(i.first=="w")
+        {
+            targetPos[2]=stod(i.second);
         }
         else
         {
@@ -224,37 +243,93 @@ Aris::Core::MSG parseMove(const std::string &cmd, const map<std::string, std::st
         }
     }
 
-    std::copy_n(legPee, 3, &beginEE[3*legNo]);
+    if(param.comID==6)
+    {
+        std::copy_n(targetPos, 3, param.targetBodyPE);
+    }
+    else
+    {
+        std::copy_n(targetPos, 3, &param.targetPee[3*param.comID]);
+        param.legNum=1;
+        param.motorNum=3;
+        param.legID[0]=param.comID;
+        int motors[3] = { 3*param.comID, 3*param.comID+1, 3*param.comID+2 };
+        std::copy_n(motors, 9, param.motorID);
+    }
 
-    Robots::ADJUST_PARAM  param;
-
-    std::copy_n(firstEE, 18, param.targetPee[0]);
-    std::fill_n(param.targetBodyPE[0], 6, 0);
-    std::copy_n(beginEE, 18, param.targetPee[1]);
-    std::fill_n(param.targetBodyPE[1], 6, 0);
-
-    param.periodNum = 2;
-    param.periodCount[0]=1000;
-    param.periodCount[1]=1500;
-
-    std::strcpy(param.relativeCoordinate,"B");
-    std::strcpy(param.relativeBodyCoordinate,"B");
-
-    param.legNum=1;
-    param.motorNum=3;
-    param.legID[0]=legNo;
-
-    int motors[3] = { 3*legNo,3*legNo+1,3*legNo+2 };
-    std::copy_n(motors, 9, param.motorID);
+    param.periodCount=3000;
 
     Aris::Core::MSG msg;
-
     msg.CopyStruct(param);
 
     std::cout<<"finished parse"<<std::endl;
 
     return msg;
 }
+
+int move2(Robots::ROBOT_BASE * pRobot, const Robots::GAIT_PARAM_BASE * pParam)
+{
+    const MOVES_PARAM *pMP = static_cast<const MOVES_PARAM *>(pParam);
+
+    double realTargetPee[18];
+    double realTargetPbody[6];
+    std::copy_n(pMP->beginPee, 18, realTargetPee);
+    std::copy_n(pMP->beginBodyPE, 6, realTargetPbody);
+
+    //绝对坐标
+    if (pMP->isAbsolute)
+    {
+        if(pMP->comID==6)
+        {
+            std::copy_n(pMP->targetBodyPE, 6, realTargetPbody);
+        }
+        else
+        {
+            std::copy_n(&(pMP->beginPee[pMP->comID*3]), 3, &realTargetPee[pMP->comID*3]);
+        }
+    }
+    //相对坐标
+    else
+    {
+        if(pMP->comID==6)
+        {
+            for(int i=0;i<6;i++)
+            {
+                realTargetPbody[i]+=pMP->targetBodyPE[i];
+            }
+        }
+        else
+        {
+            for(int i=0;i<18;i++)
+            {
+                realTargetPee[i]+=pMP->targetPee[i];
+            }
+        }
+    }
+
+    double s = -(PI / 2)*cos(PI * (pMP->count  + 1) / pMP->periodCount ) + PI / 2;
+
+    /*插值当前的末端和身体位置*/
+    double pEE[18], pBody[6];
+
+    for (int i = 0; i < 18; ++i)
+    {
+        pEE[i] = pMP->beginPee[i] * (cos(s) + 1) / 2 + realTargetPee[i] * (1 - cos(s)) / 2;
+    }
+    for (int i = 0; i < 6; ++i)
+    {
+        pBody[i] = pMP->beginBodyPE[i] * (cos(s) + 1) / 2 + realTargetPbody[i] * (1 - cos(s)) / 2;
+    }
+
+    pRobot->SetPee(pEE, pBody);
+
+    /*返回剩余的count数*/
+
+    return pMP->periodCount - pMP->count - 1;
+
+}
+
+
 
 int main()
 {
@@ -263,7 +338,7 @@ int main()
 	rs->LoadXml("/usr/Robots/CMakeDemo/Robot_III/resource/HexapodIII_Move.xml");
 	rs->AddGait("wk",Robots::walk,parseWalk);
 	rs->AddGait("ad",Robots::adjust,parseAdjust);
-	rs->AddGait("move",Robots::adjust,parseMove);
+    rs->AddGait("move",move2,parseMove);
 	rs->Start();
 	/**/
 	std::cout<<"finished"<<std::endl;
