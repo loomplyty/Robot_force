@@ -1547,12 +1547,12 @@
                 <move_param type="group">
                     <component abbreviation="c" type="string" default="bd"/>
                     <move_pos type="unique" default="relative">
-                        <relative/>
+                        <relative type="group">
                             <u abbreviation="u" type="double" default="0"/>
                             <v abbreviation="v" type="double" default="0"/>
                             <w abbreviation="w" type="double" default="0"/>
                         </relative>
-                        <absolute>
+                        <absolute type="group">
                             <x abbreviation="x" type="double"/>
                             <y abbreviation="y" type="double"/>
                             <z abbreviation="z" type="double"/>
