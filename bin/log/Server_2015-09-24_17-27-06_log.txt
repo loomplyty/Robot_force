@@ -1,0 +1,14 @@
+Thu Sep 24 17:27:06 2015
+
+0:received connection, the ip is: 127.0.0.1
+
+0:received command string:en -m=15
+
+0:lost connection
+
+4:received connection, the ip is: 127.0.0.1
+
+4:received command string:ds
+
+4:lost connection
+

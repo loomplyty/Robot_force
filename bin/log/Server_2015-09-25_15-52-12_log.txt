@@ -1,0 +1,98 @@
+Fri Sep 25 15:52:12 2015
+
+0:received connection, the ip is: 127.0.0.1
+
+0:received command string:en
+
+0:lost connection
+
+5:received connection, the ip is: 127.0.0.1
+
+5:received command string:hm
+
+5:lost connection
+
+45:received connection, the ip is: 127.0.0.1
+
+45:received command string:ad -f
+
+45:lost connection
+
+51:received connection, the ip is: 127.0.0.1
+
+51:received command string:ad -s
+
+51:lost connection
+
+63:received connection, the ip is: 127.0.0.1
+
+63:received command string:swing -c=lm
+
+63:lost connection
+
+117:received connection, the ip is: 127.0.0.1
+
+117:received command string:swing -c=lm -h=0.12
+
+117:lost connection
+
+131:received connection, the ip is: 127.0.0.1
+
+131:received command string:swing -c=lm -h=0.08
+
+131:lost connection
+
+149:received connection, the ip is: 127.0.0.1
+
+149:received command string:swing -c=lm -u=0.1
+
+149:lost connection
+
+162:received connection, the ip is: 127.0.0.1
+
+162:received command string:swing -c=lm -u=-0.1
+
+162:lost connection
+
+167:received connection, the ip is: 127.0.0.1
+
+167:received command string:swing -c=lm -u=-0.1
+
+167:lost connection
+
+183:received connection, the ip is: 127.0.0.1
+
+183:received command string:swing -c=lm -u=0.1
+
+183:lost connection
+
+197:received connection, the ip is: 127.0.0.1
+
+197:received command string:swing -c=lm -w=0.2
+
+197:lost connection
+
+209:received connection, the ip is: 127.0.0.1
+
+209:received command string:swing -c=lm -w=-0.2
+
+209:lost connection
+
+213:received connection, the ip is: 127.0.0.1
+
+213:received command string:swing -c=lm -w=-0.2
+
+213:lost connection
+
+228:received connection, the ip is: 127.0.0.1
+
+228:received command string:swing -c=lm -w=0.2
+
+228:lost connection
+
+235:received connection, the ip is: 127.0.0.1
+
+235:received command string:ds
+
+235:lost connection
+
