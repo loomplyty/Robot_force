@@ -1,3 +1,11 @@
-/usr/Robots/src/Robot_Base
-/usr/Aris/include
+CMakedemo/Aris_Control_demo
+CMakedemo/RobotIV_demo/Server
+demo/demo_HexapodIII
+src/HexapodIII
+src/HexapodIV
+src/Robot_Base
+src/Robot_Client
+src/Robot_Server
+
+ /usr/Aris/include
 /usr/Robots/include

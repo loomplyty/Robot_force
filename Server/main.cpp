@@ -164,13 +164,8 @@ struct SWING_PARAM :public Robots::GAIT_PARAM_BASE
    // double actual_forcein[18]{0};
 };
 
-Aris::Core::MSG parseForceSwing(const std::string &cmd, const map<std::string, std::string> &params)
-{
 
-}
-
-
-Aris::Core::MSG parsePositionSwing(const std::string &cmd, const map<std::string, std::string> &params)
+Aris::Core::MSG parseSwing(const std::string &cmd, const map<std::string, std::string> &params)
 {
     SWING_PARAM  param;
 
@@ -208,13 +203,28 @@ Aris::Core::MSG parsePositionSwing(const std::string &cmd, const map<std::string
 
             else
             {
-                std::cout<<"parse failed"<<std::endl;
+                std::cout<<"component parse failed"<<std::endl;
                 return MSG{};
             }
         }
-        //绝对坐标移动
 
-        //相对坐标移动
+        else if(i.first=="mode")
+        {
+            if(i.second=="p")
+            {
+                param.actuationMode==Aris::RT_CONTROL::OM_CYCLICVEL;
+            }
+            if(i.second=="f")
+            {
+                param.actuationMode==Aris::RT_CONTROL::OM_CYCLICTORQ;
+            }
+            else
+            {
+                std::cout<<"mode parse failed"<<std::endl;
+                return MSG{};
+            }
+
+        }
         else if(i.first=="u")
         {
             targetStep[0]=stod(i.second);
@@ -227,7 +237,6 @@ Aris::Core::MSG parsePositionSwing(const std::string &cmd, const map<std::string
         {
             targetStep[2]=stod(i.second);
         }
-
         else if(i.first=="h")
         {
             targetHeight=stod(i.second);
@@ -235,7 +244,7 @@ Aris::Core::MSG parsePositionSwing(const std::string &cmd, const map<std::string
 
         else
         {
-            std::cout<<"parse failed"<<std::endl;
+            std::cout<<"last parse failed"<<std::endl;
             return MSG{};
         }
     }
@@ -262,12 +271,7 @@ Aris::Core::MSG parsePositionSwing(const std::string &cmd, const map<std::string
 
 
 
-int forceswing(Robots::ROBOT_BASE * pRobot, const Robots::GAIT_PARAM_BASE * pParam)
-{
-
-}
-
-int positionswing(Robots::ROBOT_BASE * pRobot, const Robots::GAIT_PARAM_BASE * pParam)
+int swing(Robots::ROBOT_BASE * pRobot, const Robots::GAIT_PARAM_BASE * pParam)
 {
    const SWING_PARAM *pSP = static_cast<const SWING_PARAM *>(pParam);
 
@@ -544,19 +548,25 @@ int main()
     rs->AddGait("wk",Robots::walk,parseWalk);
     rs->AddGait("ad",Robots::adjust,parseAdjust);
     rs->AddGait("move",move2,parseMove);
-    rs->AddGait("swing",positionswing,parsePositionSwing);
+    rs->AddGait("swing",swing,parseSwing);
 
     Aris::Core::RegisterMsgCallback(1111,[](Aris::Core::MSG &msg)
     {
+        Robots::FORCE_PARAM_BASE *data_force;
 
-        double fIN[18],fIN_friction[18],fIN_actual[18],acc_model[18],vel_model[18]; //leg linear force in N and in motor order
-        int output_count;
-           msg.PasteAt(fIN,sizeof(double)*18,0);
+
+//        double fIN[18],fIN_friction[18],fIN_actual[18],acc_model[18],vel_model[18]; //leg linear force in N and in motor order
+           int output_count;
+
+           msg.PasteStruct(data_force);
+           msg.PasteAt(&output_count,sizeof(int),sizeof(data_force));
+
+           /*msg.PasteAt(fIN,sizeof(double)*18,0);
            msg.PasteAt(fIN_friction,sizeof(double)*18,sizeof(double)*18);
            msg.PasteAt(fIN_actual,sizeof(double)*18,sizeof(double)*36);
            msg.PasteAt(acc_model,sizeof(double)*18,sizeof(double)*54);
            msg.PasteAt(vel_model,sizeof(double)*18,sizeof(double)*72);
-           msg.PasteAt(&output_count,sizeof(int),sizeof(double)*90);
+           msg.PasteAt(&output_count,sizeof(int),sizeof(double)*90);*/
 
        static std::ofstream file;
        char LogFile[300];
@@ -580,32 +590,33 @@ int main()
 
        file<<output_count<<"    ";
 
+       for(int i=0;i<18;i++)
+      {
+          file<<data_force->Fin_modeled[i]<<"  ";
+
+      }
+
         for(int i=0;i<18;i++)
        {
-           file<<fIN[i]<<"  ";
+           file<<data_force->Fin_read[i]<<"  ";
 
        }
         for(int i=0;i<18;i++)
        {
-           file<<fIN_friction[i]<<"  ";
+           file<<data_force->Fin_write[i]<<"  ";
 
        }
        for(int i=0;i<18;i++)
        {
-           file<<fIN_actual[i]<<"   ";
+           file<<data_force->Pee_desired[i]<<"   ";
        }
 
        for(int i=0;i<18;i++)
        {
-           file<<acc_model[i]<<"   ";
+           file<<data_force->Vee_desired[i]<<"   ";
 
        }
 
-       for(int i=0;i<18;i++)
-       {
-           file<<vel_model[i]<<"   ";
-
-       }
 
        file<<std::endl;
        output_count++;

@@ -503,6 +503,7 @@
       <swing>
           <swing_param type="group">
               <component abbreviation="c" type="string" default="rr"/>
+              <mode abbreviation="M" type="string" default="p"/>
               <u abbreviation="u" type="double" default="0"/>
               <v abbreviation="v" type="double" default="0"/>
               <w abbreviation="w" type="double" default="0"/>
