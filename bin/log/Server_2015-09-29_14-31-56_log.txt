@@ -1,0 +1,50 @@
+Tue Sep 29 14:31:56 2015
+
+0:received connection, the ip is: 127.0.0.1
+
+0:received command string:en -m=15
+
+0:lost connection
+
+2:received connection, the ip is: 127.0.0.1
+
+2:received command string:hm -m=15
+
+2:lost connection
+
+6:received connection, the ip is: 127.0.0.1
+
+6:received command string:swing -c=rr -h=0.05 -u=0.05 -M=f
+
+6:lost connection
+
+8:received connection, the ip is: 127.0.0.1
+
+8:received command string:swing -c=rr -h=0.05 -u=0.05 -M=f
+
+8:lost connection
+
+19:received connection, the ip is: 127.0.0.1
+
+19:received command string:swing -c=rr -h=0.05 -u=0.05 -M=f
+
+19:lost connection
+
+26:received connection, the ip is: 127.0.0.1
+
+26:received command string:swing -c=rr -h=0.05 -u=0.05 -M=f
+
+26:lost connection
+
+27:received connection, the ip is: 127.0.0.1
+
+27:received command string:swing -c=rr -h=0.05 -u=0.05 -M=f
+
+27:lost connection
+
+27:received connection, the ip is: 127.0.0.1
+
+27:received command string:swing -c=rr -h=0.05 -u=0.05 -M=f
+
+27:lost connection
+

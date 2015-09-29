@@ -210,13 +210,18 @@ Aris::Core::MSG parseSwing(const std::string &cmd, const map<std::string, std::s
 
         else if(i.first=="mode")
         {
+
             if(i.second=="p")
             {
-                param.actuationMode==Aris::RT_CONTROL::OM_CYCLICVEL;
+                param.actuationMode=Aris::RT_CONTROL::OM_CYCLICVEL;
+
             }
-            if(i.second=="f")
+            else if(i.second=="f")
             {
-                param.actuationMode==Aris::RT_CONTROL::OM_CYCLICTORQ;
+
+                param.actuationMode=Aris::RT_CONTROL::OM_CYCLICTORQ;
+                std::cout<<"parsing mode to torque mode mode: "<<param.actuationMode<<std::endl;
+
             }
             else
             {
@@ -342,15 +347,16 @@ int swing(Robots::ROBOT_BASE * pRobot, const Robots::GAIT_PARAM_BASE * pParam)
       pRobot->SetVee(vEE);
       pRobot->SetAee(aEE);
 
-      /*
-      if(pParam->count%300==0)
-      {
-          rt_printf("motor position %f %f %f\n",pEE[15],pEE[16],pEE[17]);
-          rt_printf("motor velcity %f %f %f\n",vEE[0],vEE[1],vEE[2]);
-          rt_printf("motor acc  %f %f %f\n",aEE[0],aEE[1],aEE[2]);
 
-      }
-      */
+    //  if(pParam->count%300==0)
+      //{
+        //  rt_printf("motor operation mod %d\n",pParam->actuationMode);
+          //rt_printf("motor position %f %f %f\n",pEE[15],pEE[16],pEE[17]);
+          //rt_printf("motor velcity %f %f %f\n",vEE[0],vEE[1],vEE[2]);
+          //rt_printf("motor acc  %f %f %f\n",aEE[0],aEE[1],aEE[2]);
+
+//      }
+
 
 
     /*返回剩余的count数*/
@@ -552,11 +558,13 @@ int main()
 
     Aris::Core::RegisterMsgCallback(1111,[](Aris::Core::MSG &msg)
     {
-        Robots::FORCE_PARAM_BASE *data_force;
+
+        std::cout<<"1111 msg calling back~~"<<std::endl;
+        Robots::FORCE_PARAM_BASE  data_force;
 
 
 //        double fIN[18],fIN_friction[18],fIN_actual[18],acc_model[18],vel_model[18]; //leg linear force in N and in motor order
-           int output_count;
+          int output_count;
 
            msg.PasteStruct(data_force);
            msg.PasteAt(&output_count,sizeof(int),sizeof(data_force));
@@ -590,30 +598,24 @@ int main()
 
        file<<output_count<<"    ";
 
-       for(int i=0;i<18;i++)
-      {
-          file<<data_force->Fin_modeled[i]<<"  ";
-
-      }
-
         for(int i=0;i<18;i++)
        {
-           file<<data_force->Fin_read[i]<<"  ";
+           file<<data_force.Fin_read[i]<<"  ";
 
        }
         for(int i=0;i<18;i++)
        {
-           file<<data_force->Fin_write[i]<<"  ";
+           file<<data_force.Fin_write[i]<<"  ";
 
        }
        for(int i=0;i<18;i++)
        {
-           file<<data_force->Pee_desired[i]<<"   ";
+           file<<data_force.Pee_desired[i]<<"   ";
        }
 
        for(int i=0;i<18;i++)
        {
-           file<<data_force->Vee_desired[i]<<"   ";
+           file<<data_force.Vee_desired[i]<<"   ";
 
        }
 
