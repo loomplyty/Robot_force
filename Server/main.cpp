@@ -548,6 +548,7 @@ int move2(Robots::ROBOT_BASE * pRobot, const Robots::GAIT_PARAM_BASE * pParam)
 
 int main()
 {
+
 	auto rs = Robots::ROBOT_SERVER::GetInstance();
     rs->CreateRobot<Robots::ROBOT_III>();
     rs->LoadXml("/usr/Robots/CMakeDemo/Robot_III/resource/HexapodIII_Move.xml");
@@ -559,12 +560,10 @@ int main()
     Aris::Core::RegisterMsgCallback(1111,[](Aris::Core::MSG &msg)
     {
 
-        std::cout<<"1111 msg calling back~~"<<std::endl;
-        Robots::FORCE_PARAM_BASE  data_force;
+          Robots::FORCE_PARAM_BASE  data_force;
 
 
-//        double fIN[18],fIN_friction[18],fIN_actual[18],acc_model[18],vel_model[18]; //leg linear force in N and in motor order
-          int output_count;
+           int output_count;
 
            msg.PasteStruct(data_force);
            msg.PasteAt(&output_count,sizeof(int),sizeof(data_force));
@@ -597,27 +596,56 @@ int main()
 
 
        file<<output_count<<"    ";
+       for(int i=0;i<18;i++)
+      {
+          file<<data_force.Fin_modeled[i]<<"  ";
+
+      }
+       file<<"  ";
 
         for(int i=0;i<18;i++)
        {
            file<<data_force.Fin_read[i]<<"  ";
 
        }
+        file<<"  ";
+
         for(int i=0;i<18;i++)
        {
            file<<data_force.Fin_write[i]<<"  ";
 
        }
+        file<<"  ";
+
+
+       for(int i=0;i<18;i++)
+       {
+           file<<data_force.Pee_filtered[i]<<"  ";
+
+       }
+       file<<"  ";
+
+       for(int i=0;i<18;i++)
+       {
+           file<<data_force.Vee_filtered[i]<<"  ";
+
+       }
+       file<<"  ";
+
        for(int i=0;i<18;i++)
        {
            file<<data_force.Pee_desired[i]<<"   ";
        }
+       file<<"  ";
+
 
        for(int i=0;i<18;i++)
        {
            file<<data_force.Vee_desired[i]<<"   ";
 
        }
+       file<<"  ";
+
 
 
        file<<std::endl;

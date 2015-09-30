@@ -512,7 +512,7 @@
       </swing>
     </Commands>
     <Connection IP="127.0.0.1" Port="5866"/>
-    <Control homeCur="950" meter2count="1 / 0.01*3.5 * 65536">
+    <Control homeCur="0" meter2count="1 / 0.01*3.5 * 65536">
       <MapPhy2Abs>
         { 15 , 17 , 16, 12 , 14 , 13 , 9 , 11 , 10 , 2 , 0, 1 , 3 , 5 , 4 , 7 , 8 , 6 }
       </MapPhy2Abs>
